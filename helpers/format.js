@@ -6,33 +6,31 @@ function format(dictionary, lang, langList) {
 		dir: dictionary.rtl ? "rtl" : "ltr",
 		authors: {
 			sitnik: "Andrey Sitnik",
-			solovev: "Ivan Solovev"
+			separator: "and",
+			solovev: "Ivan Solovev",
 		},
-		covenant: /(ru|uk)/i.test(currentLang) ? "и" : "and",
-		short_name: "Easings.net"
+		short_name: "Easings.net",
 	};
 
 	const helpers = {
 		link: renderLink,
-		langList: langList.map(item => {
-			return [
+		langList: langList.map((item) =>
+			[
 				`<li>`,
 				item.code === currentLang
 					? `<span>${item.name}</span>`
-					: `<a href="/${item.code}" rel="alternate" hreflang="${item.code}">${
-							item.name
-					  }</a>`,
-				`</li>`
-			].join("");
-		}),
+					: `<a href="/${item.code}" rel="alternate" hreflang="${item.code}">${item.name}</a>`,
+				`</li>`,
+			].join("")
+		),
 		redirect_script: !lang
-			? renderRedirectScript(langList.map(item => item.code))
+			? renderRedirectScript(langList.map((item) => item.code))
 			: "",
 
 		service_worker:
 			process.env.NODE_ENV === "production"
 				? renderRegisterServiceWorker(currentLang)
-				: ""
+				: "",
 	};
 
 	const newDictionary = Object.assign(defaultDictionary, dictionary);
@@ -43,7 +41,7 @@ function formatObject(dictionary) {
 	const newDictionary = Object.assign({}, dictionary);
 
 	for (let field in newDictionary) {
-		if (newDictionary.hasOwnProperty(field)) {
+		if ({}.hasOwnProperty.call(newDictionary, field)) {
 			if (typeof newDictionary[field] === "string") {
 				newDictionary[field] = formatString(newDictionary[field]);
 			} else {
@@ -55,21 +53,19 @@ function formatObject(dictionary) {
 	return newDictionary;
 }
 
-function formatString(string) {
-	if (/^__format/i.test(string)) {
-		const newText = string
+function formatString(source) {
+	const text = source.replace(/{{([^}]{2,})}}/g, "<code>$1</code>");
+
+	if (/^__format/i.test(text)) {
+		const newText = text
 			.replace(/^__format?\s/i, "")
-			.replace(/~([^~]+)~/g, "<strong>$1</strong>")
+			.replace(/~~([^~]{2,})~~/g, "<strong>$1</strong>")
 			.replace(/\n/g, "</p><p>");
 
 		return `<p>${newText}</p>`;
-	} else if (/^__code/i.test(string)) {
-		return string
-			.replace(/^__code?\s/i, "")
-			.replace(/`([^`]+)`/g, "<code>$1</code>");
 	}
 
-	return string;
+	return text;
 }
 
 function renderLink() {
@@ -80,7 +76,7 @@ function renderLink() {
 		return renderText
 			.replace(/\((.*)\)/, "$1")
 			.replace(
-				/\^([^\^]+)\^/,
+				/\^([^^]+)\^/,
 				`<a ${linkAttr.replace(/^\[(.*)\]$/, "$1")}>$1</a>`
 			);
 	};
@@ -91,25 +87,25 @@ function renderRedirectScript(langList) {
 		<script>
 			(function () {
 				var translations = ${JSON.stringify(langList)};
-			
+
 				var system = navigator.userLanguage || navigator.language;
 				var dialect = system.toLowerCase();
 				var language = dialect.replace(/-\\w+$/, "");
-			
+
 				if (language === "no") {
 					language = "nb";
 				} else if (language === "zh") {
 					language = "zh-cn";
 				}
-			
+
 				function find(user) {
 					for (var i = 0; i < translations.length; i++) {
 						if (user === translations[i]) {
-							location.pathname += translations[i];
+							location.replace('/' + translations[i])
 						}
 					}
 				}
-			
+
 				find(dialect);
 				find(language);
 			})();

@@ -4,7 +4,10 @@
  * @param context {Document|HTMLElement}
  * @return {HTMLElement}
  */
-export function getElement(selector: string, context: Document|HTMLElement = document): HTMLElement {
+export function getElement<T extends HTMLElement = HTMLElement>(
+	selector: string,
+	context: Document | HTMLElement = document
+): T {
 	return context.querySelector(selector);
 }
 
@@ -14,6 +17,9 @@ export function getElement(selector: string, context: Document|HTMLElement = doc
  * @param context {Document|HTMLElement}
  * @return {NodeList}
  */
-export function getElementsList(selector: string, context: Document|HTMLElement = document): NodeList {
+export function getElementsList<T extends HTMLElement = HTMLElement>(
+	selector: string,
+	context: Document | HTMLElement = document
+): NodeListOf<T> {
 	return context.querySelectorAll(selector);
 }

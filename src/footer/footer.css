@@ -27,13 +27,21 @@
 		}
 
 		.footer__lang {
+			order: -1;
+		}
+
+		.footer__list {
 			margin: 0 0 5px 20px;
 		}
 
-				[dir="rtl"] .footer__lang {
+				[dir="rtl"] .footer__list {
 					margin: 0 20px 5px 0;
 				}
 
-			.footer__lang select {
+			.footer__list select {
 				font-size: 0.85rem;
+			}
+
+			.footer__link {
+				color: var(--footer-link-color);
 			}

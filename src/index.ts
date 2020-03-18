@@ -1,7 +1,7 @@
-import "./polyfills/focus-visible";
+import "focus-visible";
 
 import "./navigation/navigation";
 import "./function/function";
-import "./theme/theme";
-import "./code/code";
+import "./example-copy/example-copy";
 import "./footer/footer";
+import "./theme/theme";

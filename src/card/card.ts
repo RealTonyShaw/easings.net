@@ -2,11 +2,11 @@ import { forNodeList } from "../helpers/forNodeList";
 import { getTransitionTime } from "../helpers/getTransitionTime";
 import { getElement, getElementsList } from "../helpers/getElement";
 
-const cardTarget: HTMLElement = getElement(".card__wrap[data-target=false]");
-const cardTargetWithFunc: HTMLElement = getElement(".card__wrap[data-target=true]");
-const casesButtonsList: NodeList = getElementsList(".cases__action");
+const cardTarget = getElement(".card__wrap[data-target=false]");
+const cardTargetWithFunc = getElement(".card__wrap[data-target=true]");
+const casesButtonsList = getElementsList(".cases__action");
 
-const cardTargetClassList: {[key: string]: string} = {
+const cardTargetClassList: { [key: string]: string } = {
 	opacity: "card__wrap--opacity",
 	scale: "card__wrap--scale",
 	translate: "card__wrap--translate",
@@ -14,14 +14,14 @@ const cardTargetClassList: {[key: string]: string} = {
 
 const cardClassWithoutTransition = "card__wrap--no-transition";
 
-let isReverse: boolean = false;
+let isReverse = false;
 let currentName: string;
 let currentFunc: string;
 let currentType: string;
 
 forNodeList(casesButtonsList, (button) => {
 	button.addEventListener("click", () => {
-		const newType: string = button.getAttribute("data-type");
+		const newType = button.getAttribute("data-type");
 
 		setTransition(cardTarget, newType);
 
@@ -53,12 +53,12 @@ export function clearTransition(): void {
 	cardTarget.classList.remove(
 		cardTargetClassList.opacity,
 		cardTargetClassList.scale,
-		cardTargetClassList.translate,
+		cardTargetClassList.translate
 	);
 	cardTargetWithFunc.classList.remove(
 		cardTargetClassList.opacity,
 		cardTargetClassList.scale,
-		cardTargetClassList.translate,
+		cardTargetClassList.translate
 	);
 
 	requestAnimationFrame(() => {

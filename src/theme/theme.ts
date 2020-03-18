@@ -1,29 +1,40 @@
-import { getElementsList } from "../helpers/getElement";
-import { forNodeList } from "../helpers/forNodeList";
+import { getElement } from "../helpers/getElement";
 
-const mql = window.matchMedia("(prefers-color-scheme: dark)");
-changeTheme(mql.matches);
-mql.addListener(({matches}) => changeTheme(matches));
+const selectorThemeSelect = ".footer__theme";
+const themeSelect = getElement<HTMLSelectElement>(selectorThemeSelect);
 
-function changeTheme(matches: boolean): void {
-	const chartList = getElementsList(".chart__curve");
+const classLightTheme = "is-light";
+const classDarkTheme = "is-dark";
 
-	forNodeList(chartList, (item) => {
-		const stroke = item.getAttribute("stroke");
-		let type = "inOut";
+const storageThemeKey = "theme";
 
-		if (/in\)/i.test(stroke)) {
-			type = "in";
-		} else if (/[^n]out\)/i.test(stroke)) {
-			type = "out";
-		}
+if (typeof localStorage.getItem(storageThemeKey) === "string") {
+	const theme = localStorage.getItem(storageThemeKey);
+	themeSelect.value = theme;
+	changeTheme(theme);
+}
 
-		if (type !== "inOut") {
-			if (matches) {
-				item.setAttribute("stroke", `url(#${type === "in" ? "darkIn" : "darkOut"})`);
-			} else {
-				item.setAttribute("stroke", `url(#${type === "in" ? "in" : "out"})`);
-			}
-		}
-	});
+themeSelect.addEventListener("change", () => {
+	localStorage.setItem(storageThemeKey, themeSelect.value);
+	changeTheme(themeSelect.value);
+});
+
+function changeTheme(value: string): void {
+	switch (value) {
+		case "light":
+			document.documentElement.classList.remove(classDarkTheme);
+			document.documentElement.classList.add(classLightTheme);
+			break;
+
+		case "dark":
+			document.documentElement.classList.remove(classLightTheme);
+			document.documentElement.classList.add(classDarkTheme);
+			break;
+
+		default:
+			document.documentElement.classList.remove(
+				classLightTheme,
+				classDarkTheme
+			);
+	}
 }

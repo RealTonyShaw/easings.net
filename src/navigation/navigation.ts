@@ -2,26 +2,44 @@ import { clearTransition, setFuncForCard } from "../card/card";
 import { getTransitionTime } from "../helpers/getTransitionTime";
 import { getElementPosition } from "../helpers/getElementPosition";
 import { parseStringOfFourNumbers } from "../helpers/parseStringOfFourNumbers";
-import { infoChartOffsetTopClassName, noTimingFunction, selectorInfo, selectorInfoChart } from "../helpers/constants";
-import { setInfoFunc, setInfoName, showComplexInfo, showSimpleInfo } from "../info/info";
-import { resetOverlay, setSizeOverlay, setTransitionDurationOverlay, showOverlay } from "../overlay/overlay";
+import {
+	infoChartOffsetTopClassName,
+	noTimingFunction,
+	selectorInfo,
+	selectorInfoChart,
+	selectorDetails,
+} from "../helpers/constants";
+import { forNodeList } from "../helpers/forNodeList";
+import { getElement, getElementsList } from "../helpers/getElement";
+import {
+	setInfoFunc,
+	setInfoName,
+	showComplexInfo,
+	showSimpleInfo,
+} from "../info/info";
+import {
+	resetOverlay,
+	setSizeOverlay,
+	setTransitionDurationOverlay,
+	showOverlay,
+} from "../overlay/overlay";
 import { hideGradient, setGradient } from "../gradient/gradient";
 import { setTransitionForInfoChartCursor } from "../info-chart/info-chart";
 
 const selectorColumns = ".columns";
 const timeTransitionForOverlay = 300;
-const linkCubicBezierElement: HTMLLinkElement = document.querySelector(".js-cubic-bezier");
-const linkCubicBezierHref: string = linkCubicBezierElement.href;
+const linkCubicBezierElement = getElement<HTMLLinkElement>(".js-cubic-bezier");
+const linkCubicBezierHref = linkCubicBezierElement.href;
 
-const header: HTMLElement = document.querySelector(".header");
-const info: HTMLElement = document.querySelector(selectorInfo);
-const infoChart: HTMLElement = document.querySelector(selectorInfoChart);
-const columns: HTMLElement = document.querySelector(selectorColumns);
+const header = getElement(".header");
+const info = getElement(selectorInfo);
+const infoChart = getElement(selectorInfoChart);
+const columns = getElement(selectorColumns);
 
 const overlayOffsetVertical = 30;
 const overlayOffsetHorizontal = 30;
 
-let openItemId: string|null;
+let openItemId: string | null;
 
 window.addEventListener("resize", resizeInfo, false);
 
@@ -37,6 +55,15 @@ if (chartId) {
 window.addEventListener(
 	"hashchange",
 	() => {
+		if (window.getSelection) {
+			window.getSelection().removeAllRanges();
+		}
+		forNodeList(getElementsList(selectorDetails), (item) => {
+			if (item.hasAttribute("open")) {
+				item.removeAttribute("open");
+			}
+		});
+
 		const id = window.location.hash.slice(1);
 
 		if (id) {
@@ -45,12 +72,15 @@ window.addEventListener(
 			navigateMain();
 		}
 	},
-	false,
+	false
 );
 
 window.addEventListener("keydown", (event) => {
 	const keyName = "escape";
-	if (event.key.toLowerCase() === keyName || event.code.toLowerCase() === keyName) {
+	if (
+		event.key.toLowerCase() === keyName ||
+		event.code.toLowerCase() === keyName
+	) {
 		window.location.hash = "";
 	}
 });
@@ -88,10 +118,7 @@ function navigateMain(): void {
 		});
 	}, infoTransitionTime);
 
-	setTimeout(
-		resetOverlay,
-		timeTransitionForOverlay + infoTransitionTime,
-	);
+	setTimeout(resetOverlay, timeTransitionForOverlay + infoTransitionTime);
 }
 
 function navigateChart(id: string): void {
@@ -110,8 +137,8 @@ function navigateChart(id: string): void {
 	const transitionTimingFunction = func === noTimingFunction ? "ease" : func;
 
 	if (name && func) {
-		const infoCurve: HTMLElement = info.querySelector(".info-chart__curve");
-		const itemCurve: HTMLElement = item.querySelector(".chart__curve");
+		const infoCurve = getElement(".info-chart__curve", info);
+		const itemCurve = getElement(".chart__curve", item);
 		const columnsTransitionTime = getTransitionTime(columns);
 
 		if (itemOffset === "top") {
@@ -126,8 +153,10 @@ function navigateChart(id: string): void {
 		setTransitionForInfoChartCursor(func, name);
 
 		if (func !== noTimingFunction) {
-			const points: number[] = parseStringOfFourNumbers(func);
-			linkCubicBezierElement.href = `${linkCubicBezierHref}#${points.join(",")}`;
+			const points = parseStringOfFourNumbers(func);
+			linkCubicBezierElement.href = `${linkCubicBezierHref}#${points.join(
+				","
+			)}`;
 			showSimpleInfo();
 			setGradient(name, points);
 		} else {
@@ -135,9 +164,10 @@ function navigateChart(id: string): void {
 			hideGradient();
 		}
 
-		infoCurve
-			.querySelector("path")
-			.setAttribute("d", itemCurve.getAttribute("d"));
+		getElement("path", infoCurve).setAttribute(
+			"d",
+			itemCurve.getAttribute("d")
+		);
 
 		info.style.transitionTimingFunction = transitionTimingFunction;
 		info.style.display = "block";
@@ -167,7 +197,8 @@ function navigateChart(id: string): void {
 				});
 
 				const headerPosition = getElementPosition(header);
-				const topOffset = headerPosition.height + headerPosition.y - overlayOffsetVertical / 2;
+				const topOffset =
+					headerPosition.height + headerPosition.y - overlayOffsetVertical / 2;
 
 				requestAnimationFrame(() => {
 					window.scrollTo({

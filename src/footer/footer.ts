@@ -1,14 +1,21 @@
 import { getElement, getElementsList } from "../helpers/getElement";
 
 const selectorFooterLang = ".footer__lang";
+const selectorLangList = `${selectorFooterLang} ul`;
 const selectorLangItem = `${selectorFooterLang} li`;
 
-const footerListItems = getElementsList(`${selectorLangItem} a, ${selectorLangItem} span`);
-const selectElement: HTMLSelectElement = document.createElement("select");
+const footerLangList = getElement(selectorLangList);
+const footerListItems = getElementsList<HTMLElement>(
+	`${selectorLangItem} a, ${selectorLangItem} span`
+);
+const selectElement = document.createElement("select");
 selectElement.onchange = changeLang;
 
-footerListItems.forEach((langLink: HTMLElement) => {
-	const option: HTMLOptionElement = document.createElement("option");
+const label = footerLangList.getAttribute("aria-label");
+selectElement.setAttribute("aria-label", label);
+
+footerListItems.forEach((langLink) => {
+	const option = document.createElement("option");
 
 	const linkHref = langLink.getAttribute("href");
 	option.value = linkHref || window.location.pathname;
